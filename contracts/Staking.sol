@@ -10,8 +10,8 @@ contract StakingContract is Ownable, ReentrancyGuard {
     
     uint256 public constant DEPOSIT_WINDOW = 24 hours; // Deposit window: 24 hours
     uint256 public constant STAKING_DURATION = 14 days; // Staking duration: 14 days
-    uint256 public constant REWARD_PERCENTAGE = 15; // Reward percentage: 15%
-    uint256 public constant MAX_TOTAL_STAKE = 260_000_000 * 10**18; // Maximum cap: 260M tokens
+    uint256 public constant REWARD_PERCENTAGE = 10; // Reward percentage: 10%
+    uint256 public constant MAX_TOTAL_STAKE = 150_000_000 * 10**18; // Maximum cap: 150M tokens
     
     uint256 public startTime;
     uint256 public endTime;
@@ -110,6 +110,7 @@ contract StakingContract is Ownable, ReentrancyGuard {
             stakingToken.transfer(msg.sender, totalAmount),
             "Transfer failed"
         );
+
         
         emit Claimed(msg.sender, stakedAmount, rewardAmount);
     }
@@ -197,6 +198,13 @@ contract StakingContract is Ownable, ReentrancyGuard {
         stakedAmount = userStake.amount;
         claimed = userStake.claimed;
         potentialReward = (stakedAmount * REWARD_PERCENTAGE) / 100;
+    }
+
+    /**
+     * @dev Get the total amount of rewards required for the maximum cap
+     */
+    function requiredRewards() external pure returns (uint256) {
+    return (MAX_TOTAL_STAKE * REWARD_PERCENTAGE) / 100;
     }
     
     /**

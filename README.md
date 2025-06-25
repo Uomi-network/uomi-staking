@@ -19,8 +19,8 @@ A comprehensive Solidity smart contract for token staking with fixed-duration pe
 |-----------|-------|
 | Deposit Window | 24 hours |
 | Staking Duration | 14 days |
-| Reward Percentage | 15% |
-| Maximum Total Stake | 260,000,000 tokens |
+| Reward Percentage | 10% |
+| Maximum Total Stake | 150,000,000 tokens |
 | Stakes Per User | Multiple (during deposit window) |
 | Minimum Stake | > 0 tokens |
 
