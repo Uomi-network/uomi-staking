@@ -12,7 +12,7 @@ describe("StakingContract - Incremental Staking", function () {
   const INITIAL_SUPPLY = ethers.parseUnits("2000000000", 18); // 2B tokens
   const DEPOSIT_WINDOW = 24 * 60 * 60; // 24 hours
   const STAKING_DURATION = 14 * 24 * 60 * 60; // 14 days
-  const MAX_TOTAL_STAKE = ethers.parseUnits("260000000", 18); // 260M tokens
+  const MAX_TOTAL_STAKE = ethers.parseUnits("150000000", 18); // 150M tokens
 
   beforeEach(async function () {
     [owner, user1, user2, user3] = await ethers.getSigners();
@@ -161,8 +161,8 @@ describe("StakingContract - Incremental Staking", function () {
 
   describe("Cap Enforcement with Incremental Staking", function () {
     it("Should prevent incremental stake that would exceed cap", async function () {
-      const largeStake = ethers.parseUnits("50000000", 18); // 50M
-      const incrementStake = ethers.parseUnits("50000000", 18); // 50M (changed to exceed cap)
+      const largeStake = ethers.parseUnits("30000000", 18); // 30M
+      const incrementStake = ethers.parseUnits("30000000", 18); // 30M
 
       await token.connect(user1).approve(await stakingContract.getAddress(), largeStake + incrementStake);
 
@@ -171,14 +171,14 @@ describe("StakingContract - Incremental Staking", function () {
       expect(await stakingContract.totalStaked()).to.equal(largeStake);
 
       // Add user2 with large stake to approach cap
-      const user2Stake = ethers.parseUnits("170000000", 18); // 170M 
+      const user2Stake = ethers.parseUnits("100000000", 18); // 100M 
       await token.connect(user2).approve(await stakingContract.getAddress(), user2Stake);
       await stakingContract.connect(user2).stake(user2Stake);
 
-      // Now total is 220M, trying to add 50M more would give 270M, exceeding 260M cap
+      // Now total is 130M, trying to add 30M more would give 160M, exceeding 150M cap
       await expect(
         stakingContract.connect(user1).stake(incrementStake)
-      ).to.be.revertedWith("Exceeds maximum cap of 260M tokens");
+      ).to.be.revertedWith("Exceeds maximum cap of 150M tokens");
 
       // Verify stake wasn't changed
       const [amount] = await stakingContract.getUserStakeInfo(user1.address);
@@ -186,8 +186,8 @@ describe("StakingContract - Incremental Staking", function () {
     });
 
     it("Should allow incremental stake up to exact cap", async function () {
-      const firstStake = ethers.parseUnits("30000000", 18); // 30M
-      const secondStake = ethers.parseUnits("20000000", 18);  // 20M
+      const firstStake = ethers.parseUnits("20000000", 18); // 20M
+      const secondStake = ethers.parseUnits("10000000", 18);  // 10M
 
       await token.connect(user1).approve(await stakingContract.getAddress(), firstStake + secondStake);
 
@@ -195,8 +195,8 @@ describe("StakingContract - Incremental Staking", function () {
       await stakingContract.connect(user1).stake(firstStake);
 
       // Add other users to approach cap
-      const user2Stake = ethers.parseUnits("100000000", 18); // 100M
-      const user3Stake = ethers.parseUnits("110000000", 18); // 110M
+      const user2Stake = ethers.parseUnits("60000000", 18); // 60M
+      const user3Stake = ethers.parseUnits("60000000", 18); // 60M
       
       await token.connect(user2).approve(await stakingContract.getAddress(), user2Stake);
       await token.connect(user3).approve(await stakingContract.getAddress(), user3Stake);
@@ -204,7 +204,7 @@ describe("StakingContract - Incremental Staking", function () {
       await stakingContract.connect(user2).stake(user2Stake);
       await stakingContract.connect(user3).stake(user3Stake);
 
-      // Now total is 240M, user1 can add 20M to reach exactly 260M
+      // Now total is 140M, user1 can add 10M to reach exactly 150M
       await stakingContract.connect(user1).stake(secondStake);
 
       // Verify total is exactly at cap
@@ -275,8 +275,8 @@ describe("StakingContract - Incremental Staking", function () {
       await stakingContract.connect(user1).stake(firstStake);
       await stakingContract.connect(user1).stake(secondStake);
 
-      // Calculate expected reward (15% of total)
-      const expectedReward = (totalStake * 15n) / 100n;
+      // Calculate expected reward (10% of total)
+      const expectedReward = (totalStake * 10n) / 100n;
 
       // Check reward calculation
       const [stakedAmount, rewardAmount] = await stakingContract.calculateReward(user1.address);
@@ -288,7 +288,7 @@ describe("StakingContract - Incremental Staking", function () {
       const firstStake = ethers.parseUnits("1000", 18);
       const secondStake = ethers.parseUnits("500", 18);
       const totalStake = firstStake + secondStake;
-      const expectedReward = (totalStake * 15n) / 100n;
+      const expectedReward = (totalStake * 10n) / 100n;
 
       await token.connect(user1).approve(await stakingContract.getAddress(), totalStake);
 

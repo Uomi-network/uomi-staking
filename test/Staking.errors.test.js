@@ -8,8 +8,8 @@ const { ethers } = require("hardhat");
 describe("StakingContract - Error Handling & Edge Cases", function () {
   const DEPOSIT_WINDOW = 24 * 60 * 60; // 24 hours in seconds
   const STAKING_DURATION = 14 * 24 * 60 * 60; // 14 days in seconds
-  const REWARD_PERCENTAGE = 15;
-  const MAX_TOTAL_STAKE = ethers.parseUnits("260000000", 18); // 260M tokens
+  const REWARD_PERCENTAGE = 10;
+  const MAX_TOTAL_STAKE = ethers.parseUnits("150000000", 18); // 150M tokens
   const INITIAL_SUPPLY = ethers.parseUnits("2000000000", 18); // 2B tokens
 
   async function deployStakingFixture() {
@@ -88,8 +88,8 @@ describe("StakingContract - Error Handling & Edge Cases", function () {
       
       // Set up scenario where both users try to stake amounts that individually are fine
       // but together would exceed the cap
-      const nearCapAmount = ethers.parseUnits("200000000", 18); // 200M
-      const smallAmount = ethers.parseUnits("70000000", 18); // 70M (200M + 70M = 270M > 260M cap)
+      const nearCapAmount = ethers.parseUnits("100000000", 18); // 100M
+      const smallAmount = ethers.parseUnits("60000000", 18); // 60M (100M + 60M = 160M > 150M cap)
       
       // First user stakes
       await stakingToken.connect(user1).approve(stakingContract.target, nearCapAmount);
@@ -98,7 +98,7 @@ describe("StakingContract - Error Handling & Edge Cases", function () {
       // Second user should be rejected
       await stakingToken.connect(user2).approve(stakingContract.target, smallAmount);
       await expect(stakingContract.connect(user2).stake(smallAmount))
-        .to.be.revertedWith("Exceeds maximum cap of 260M tokens");
+        .to.be.revertedWith("Exceeds maximum cap of 150M tokens");
     });
 
     it("Should handle stake amount of exactly 1 wei", async function () {
@@ -316,7 +316,7 @@ describe("StakingContract - Error Handling & Edge Cases", function () {
       expect(rewardAmount).to.equal(maxStake * BigInt(REWARD_PERCENTAGE) / 100n);
       
       // Verify no overflow occurred by checking the calculation makes sense
-      const expectedReward = (maxStake * BigInt(15)) / BigInt(100);
+      const expectedReward = (maxStake * BigInt(10)) / BigInt(100);
       expect(rewardAmount).to.equal(expectedReward);
     });
   });

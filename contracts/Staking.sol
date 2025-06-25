@@ -64,7 +64,7 @@ contract StakingContract is Ownable, ReentrancyGuard {
      */
     function stake(uint256 _amount) external onlyDuringDepositWindow nonReentrant {
         require(_amount > 0, "Amount must be greater than 0");
-        require(totalStaked + _amount <= MAX_TOTAL_STAKE, "Exceeds maximum cap of 260M tokens");
+        require(totalStaked + _amount <= MAX_TOTAL_STAKE, "Exceeds maximum cap of 150M tokens");
         
         // Transfer tokens from user to contract
         require(

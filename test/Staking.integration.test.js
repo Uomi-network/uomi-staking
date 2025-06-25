@@ -8,8 +8,8 @@ const { ethers } = require("hardhat");
 describe("StakingContract - Integration Tests", function () {
   const DEPOSIT_WINDOW = 24 * 60 * 60; // 24 hours in seconds
   const STAKING_DURATION = 14 * 24 * 60 * 60; // 14 days in seconds
-  const REWARD_PERCENTAGE = 15;
-  const MAX_TOTAL_STAKE = ethers.parseUnits("260000000", 18); // 260M tokens
+  const REWARD_PERCENTAGE = 10;
+  const MAX_TOTAL_STAKE = ethers.parseUnits("150000000", 18); // 150M tokens
   const INITIAL_SUPPLY = ethers.parseUnits("2000000000", 18); // 2B tokens
 
   async function deployStakingFixture() {
@@ -54,9 +54,9 @@ describe("StakingContract - Integration Tests", function () {
     it("Should handle complete staking cycle with multiple users", async function () {
       const { stakingContract, stakingToken, owner, user1, user2, user3 } = await loadFixture(deployAndStartStakingFixture);
       
-      const stakeAmount1 = ethers.parseUnits("50000000", 18); // 50M
-      const stakeAmount2 = ethers.parseUnits("100000000", 18); // 100M  
-      const stakeAmount3 = ethers.parseUnits("50000000", 18); // 50M
+      const stakeAmount1 = ethers.parseUnits("30000000", 18); // 30M
+      const stakeAmount2 = ethers.parseUnits("60000000", 18); // 60M  
+      const stakeAmount3 = ethers.parseUnits("40000000", 18); // 40M (total = 130M)
       
       // Users stake during deposit window
       await stakingToken.connect(user1).approve(stakingContract.target, stakeAmount1);
@@ -155,8 +155,8 @@ describe("StakingContract - Integration Tests", function () {
     it("Should prevent staking when cap would be exceeded", async function () {
       const { stakingContract, stakingToken, user1, user2 } = await loadFixture(deployAndStartStakingFixture);
       
-      const largeStake = ethers.parseUnits("200000000", 18); // 200M
-      const smallStake = ethers.parseUnits("70000000", 18); // 70M (would exceed cap when combined)
+      const largeStake = ethers.parseUnits("100000000", 18); // 100M
+      const smallStake = ethers.parseUnits("60000000", 18); // 60M (would exceed 150M cap when combined)
       
       // First user stakes large amount
       await stakingToken.connect(user1).approve(stakingContract.target, largeStake);
@@ -165,7 +165,7 @@ describe("StakingContract - Integration Tests", function () {
       // Second user tries to stake amount that would exceed cap
       await stakingToken.connect(user2).approve(stakingContract.target, smallStake);
       await expect(stakingContract.connect(user2).stake(smallStake))
-        .to.be.revertedWith("Exceeds maximum cap of 260M tokens");
+        .to.be.revertedWith("Exceeds maximum cap of 150M tokens");
       
       // Check that exactly cap amount can still be staked
       const remainingCapacity = await stakingContract.getRemainingCapacity();
@@ -178,11 +178,11 @@ describe("StakingContract - Integration Tests", function () {
     it("Should handle exact cap reached scenario", async function () {
       const { stakingContract, stakingToken, user1, user2, user3, user4 } = await loadFixture(deployAndStartStakingFixture);
       
-      // Distribute exactly 260M across 4 users
-      const stake1 = ethers.parseUnits("65000000", 18); // 65M
-      const stake2 = ethers.parseUnits("65000000", 18); // 65M
-      const stake3 = ethers.parseUnits("65000000", 18); // 65M
-      const stake4 = ethers.parseUnits("65000000", 18); // 65M = 260M total
+      // Distribute exactly 150M across 4 users
+      const stake1 = ethers.parseUnits("37500000", 18); // 37.5M
+      const stake2 = ethers.parseUnits("37500000", 18); // 37.5M
+      const stake3 = ethers.parseUnits("37500000", 18); // 37.5M
+      const stake4 = ethers.parseUnits("37500000", 18); // 37.5M = 150M total
       
       await stakingToken.connect(user1).approve(stakingContract.target, stake1);
       await stakingContract.connect(user1).stake(stake1);
@@ -309,7 +309,7 @@ describe("StakingContract - Integration Tests", function () {
       const hugeAmount = ethers.parseUnits("100000000000", 18);
       await stakingToken.connect(user1).approve(stakingContract.target, hugeAmount);
       await expect(stakingContract.connect(user1).stake(hugeAmount))
-        .to.be.revertedWith("Exceeds maximum cap of 260M tokens");
+        .to.be.revertedWith("Exceeds maximum cap of 150M tokens");
     });
   });
 

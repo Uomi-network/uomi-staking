@@ -8,8 +8,8 @@ const { ethers } = require("hardhat");
 describe("StakingContract", function () {
   const DEPOSIT_WINDOW = 24 * 60 * 60; // 24 hours in seconds
   const STAKING_DURATION = 14 * 24 * 60 * 60; // 14 days in seconds
-  const REWARD_PERCENTAGE = 15;
-  const MAX_TOTAL_STAKE = ethers.parseUnits("260000000", 18); // 260M tokens
+  const REWARD_PERCENTAGE = 10;
+  const MAX_TOTAL_STAKE = ethers.parseUnits("150000000", 18); // 150M tokens
   const INITIAL_SUPPLY = ethers.parseUnits("2000000000", 18); // 2B tokens
 
   async function deployStakingFixture() {
@@ -218,15 +218,15 @@ describe("StakingContract", function () {
       await stakingToken.connect(user1).approve(stakingContract.target, stakeAmount);
       
       await expect(stakingContract.connect(user1).stake(stakeAmount))
-        .to.be.revertedWith("Exceeds maximum cap of 260M tokens");
+        .to.be.revertedWith("Exceeds maximum cap of 150M tokens");
     });
 
     it("Should handle multiple users staking", async function () {
       const { stakingContract, stakingToken, user1, user2, user3 } = await loadFixture(deployAndStartStakingFixture);
       
       const stakeAmount1 = ethers.parseUnits("50000000", 18); // 50M
-      const stakeAmount2 = ethers.parseUnits("100000000", 18); // 100M
-      const stakeAmount3 = ethers.parseUnits("110000000", 18); // 110M (total = 260M, exactly at cap)
+      const stakeAmount2 = ethers.parseUnits("60000000", 18); // 60M
+      const stakeAmount3 = ethers.parseUnits("40000000", 18); // 40M (total = 150M, exactly at cap)
       
       // User 1 stakes
       await stakingToken.connect(user1).approve(stakingContract.target, stakeAmount1);
