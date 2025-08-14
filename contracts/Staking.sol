@@ -129,8 +129,18 @@ contract StakingContract is Ownable, ReentrancyGuard {
     /**
      * @dev Withdraw unused tokens from contract (owner only, after staking ends)
      * @param _amount Amount to withdraw
-     */
+    */
     function withdrawUnusedTokens(uint256 _amount) external onlyOwner onlyAfterStakingEnd {
+        // Added: Calculate remaining required and available to prevent drainage
+        uint256 remainingStakes = totalStaked - totalClaimedStakes;
+        uint256 totalRewards = (totalStaked * REWARD_PERCENTAGE) / 100;
+        uint256 remainingRewards = totalRewards - totalClaimedRewards;
+        uint256 required = remainingStakes + remainingRewards;
+        uint256 balance = stakingToken.balanceOf(address(this));
+        uint256 available = balance > required ? balance - required : 0;
+        
+        require(_amount <= available, "Exceeds available unused tokens");
+        
         require(
             stakingToken.transfer(owner(), _amount),
             "Transfer failed"
