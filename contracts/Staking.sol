@@ -8,10 +8,10 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 contract StakingContract is Ownable, ReentrancyGuard {
     IERC20 public stakingToken;
     
-    uint256 public constant DEPOSIT_WINDOW = 24 hours; // Deposit window: 24 hours
+    uint256 public constant DEPOSIT_WINDOW = 48 hours; // Deposit window: 48 hours
     uint256 public constant STAKING_DURATION = 14 days; // Staking duration: 14 days
     uint256 public constant REWARD_PERCENTAGE = 10; // Reward percentage: 10%
-    uint256 public constant MAX_TOTAL_STAKE = 150_000_000 * 10**18; // Maximum cap: 150M tokens
+    uint256 public constant MAX_TOTAL_STAKE = 50_000_000 * 10**18; // Maximum cap: 50M tokens
     
     uint256 public startTime;
     uint256 public endTime;
