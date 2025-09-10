@@ -6,8 +6,8 @@ A comprehensive Solidity smart contract for token staking with fixed-duration pe
 
 - **24-Hour Deposit Window**: Users can only stake during a 24-hour window after staking is started
 - **14-Day Staking Duration**: Fixed staking period of 14 days
-- **15% Rewards**: Guaranteed 15% reward on staked tokens
-- **260M Token Cap**: Maximum total stake limit across all users
+- **10% Rewards**: Guaranteed 10% reward on staked tokens
+- **150M Token Cap**: Maximum total stake limit across all users
 - **Incremental Staking**: Users can increase their stake multiple times during the deposit window
 - **Owner Controls**: Administrative functions for reward management and token recovery
 - **Reentrancy Protection**: Built-in security against reentrancy attacks
@@ -89,7 +89,7 @@ function stake(uint256 _amount) external
 **Requirements:**
 - Staking must be active and within deposit window
 - Amount must be greater than 0
-- Total stake (including previous stakes) must not exceed 260M cap
+- Total stake (including previous stakes) must not exceed 150M cap
 - User must have sufficient token balance and allowance
 
 **Events:**
@@ -148,7 +148,7 @@ function isStakingEnded() external view returns (bool)
 ```
 
 #### `getRemainingCapacity()`
-Returns the remaining staking capacity before hitting the 260M cap.
+Returns the remaining staking capacity before hitting the 150M cap.
 
 ```solidity
 function getRemainingCapacity() external view returns (uint256)
